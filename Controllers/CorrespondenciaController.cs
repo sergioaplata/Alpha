@@ -1,6 +1,7 @@
 ﻿using Alpha.Contexts;
 using Alpha.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,23 +23,25 @@ namespace Alpha.Controllers
 
         // GET: api/<CorrespondenciaController>
         [HttpGet]
-        public IEnumerable<Correspondencia> Get()
+        public async Task<ActionResult<IEnumerable<Correspondencia>>> GetCorrespondencias()
         {
-            return context.Correspondencias.ToList();
+            return await context.Correspondencias.ToListAsync();
         }
 
         // GET api/<CorrespondenciaController>/5
         [HttpGet("{id}")]
-        public Correspondencia Get(string id)
+        public async Task<Correspondencia> GetCorrespondenciaById(string id)
         {
-            var correspondencia = context.Correspondencias.FirstOrDefault(x => x.Id == id);
-            return correspondencia;
+            return await context.Correspondencias.FindAsync(id);
         }
 
         // POST api/<CorrespondenciaController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<Correspondencia>> PostCorrespondencia(Correspondencia item)
         {
+            context.Correspondencias.Add(item);
+            await context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetCorrespondencias), new { id = item.Id }, item);
         }
 
         // PUT api/<CorrespondenciaController>/5
